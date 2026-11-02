@@ -31,19 +31,22 @@ a.btn{display:inline-block;text-decoration:none;color:var(--ink)}
 h1{font-size:clamp(30px,5vw,48px);margin:24px 0 10px}
 .lead{color:var(--mute);max-width:56ch;margin:0 0 22px}
 .hero{position:relative;overflow:hidden;width:100vw;margin:0 0 0 calc(50% - 50vw);min-height:calc(100vh - 64px);min-height:calc(100svh - 64px);display:flex;align-items:center;padding:56px max(20px,calc(50vw - 460px));color:#2b2d5b;background:#bcd4ff}
-.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(188,212,255,.82),rgba(255,194,203,.78)),url(bg.jpg) center/cover no-repeat,linear-gradient(135deg,#bcd4ff,#ffc2cb);animation:kb 26s ease-in-out infinite alternate}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(188,212,255,.38),rgba(255,194,203,.34)),url(bg.jpg) center/cover no-repeat,linear-gradient(135deg,#bcd4ff,#ffc2cb);animation:kb 26s ease-in-out infinite alternate}
 @keyframes kb{from{transform:scale(1)}to{transform:scale(1.14)}}
-.hero .in{position:relative;z-index:1;max-width:560px}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-100%);animation:sweep 9s ease-in-out infinite}
+@keyframes sweep{60%,100%{transform:translateX(100%)}}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}}
+.hero .in{position:relative;z-index:1;max-width:560px;padding:30px 32px;border-radius:28px;background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.75);box-shadow:0 10px 40px rgba(43,45,91,.15);animation:rise .9s ease both}
 .hero .logo{width:76px;height:76px;margin-bottom:14px}
 .hero h1{margin:0 0 12px;color:#2b2d5b}
 .hero p{margin:0 0 18px;font-size:19px}
-.b{position:absolute;border-radius:50%;opacity:.65;animation:float 9s ease-in-out infinite}
+.b{position:absolute;border-radius:50%;opacity:.5;animation:float 9s ease-in-out infinite}
 .b1{width:280px;height:280px;background:#ff9aa8;right:-70px;top:-90px}
 .b2{width:190px;height:190px;background:#8fb8ff;right:150px;bottom:-80px;animation-delay:-3s}
 .b3{width:90px;height:90px;background:#fff;right:38%;top:18px;animation-delay:-6s}
 @keyframes flow{50%{background-position:100% 50%}}
 @keyframes float{50%{transform:translateY(-18px)}}
-@media (prefers-reduced-motion:reduce){.hero::before,.b{animation:none}}
+@media (prefers-reduced-motion:reduce){.hero::before,.hero::after,.hero .in,.b{animation:none}}
 .cta{display:inline-block;text-decoration:none;font-size:18px;padding:13px 26px;border-radius:999px;background:#2b2d5b;color:#fff;font-weight:700;box-shadow:4px 4px 0 #ff9aa8;transition:transform .15s}
 .cta:hover{transform:translateY(-2px)}
 address{font-style:normal;font-size:16px;margin-top:20px;line-height:1.7}
@@ -223,7 +226,7 @@ function renderSearch(){
   const out = t ? pub.filter(x => norm(x.name).includes(t) || norm(x.active_ingredient).includes(t)) : pub.filter(x => letter === "*" || first(x.name) === letter);
   const shown = out.slice(0, limit);
   $("#res").innerHTML = shown.length ? shown.map(x => {
-    const sub = [x.active_ingredient, x.strength].filter(Boolean).join(" · ");
+    const sub = x.active_ingredient || "";
     return `<li><button class="row" data-id="${x.id}" aria-expanded="${openId===x.id}"><b>${esc(x.name)}</b><br><small>${esc(sub)}</small></button>${openId===x.id ? detail(x) : ""}</li>`;
   }).join("") + (out.length > limit ? `<li style="padding:10px"><button class="btn" id="more">Xem thêm (còn ${out.length - limit})</button></li>` : "") : note("Không tìm thấy thuốc phù hợp. Thử tên hoạt chất.");
 }
