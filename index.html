@@ -6,11 +6,11 @@
 <title>BVYHCTPY – Tra cứu thuốc</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#10343a;--paper:#f7fbfb;--panel:#fff;--mist:#dceef0;--line:#c5dde0;--sun:#f2b83d;--mute:#4d6b70;--bad:#b3261e;
+:root{--ink:#2b2d5b;--paper:#f6f9ff;--panel:#fff;--mist:#e3edff;--line:#cfdcf7;--sun:#ff9aa8;--blue:#a9c8ff;--mute:#5b6390;--bad:#c62840;--deco:radial-gradient(circle at 92% 0,#ffe3e8 0,transparent 38%),radial-gradient(circle at 0 25%,#dce8ff 0,transparent 40%);
 box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root{--ink:#e6f4f5;--paper:#0d2226;--panel:#13302f;--mist:#17393d;--line:#264a4e;--mute:#9bbcc0;--bad:#ff8a80}}
+@media (prefers-color-scheme:dark){:root{--ink:#eef2ff;--paper:#15172b;--panel:#1e2140;--mist:#272b55;--line:#363b6e;--mute:#a9b0dd;--bad:#ff8a9b;--deco:linear-gradient(transparent,transparent)}}
 *,*::before,*::after{box-sizing:inherit}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 "Source Sans 3",system-ui,sans-serif}
+body{overflow-x:hidden;margin:0;background:var(--deco),var(--paper);color:var(--ink);font:400 17px/1.55 "Source Sans 3",system-ui,sans-serif}
 h1,h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0}
 :focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 .wrap{max-width:960px;margin:0 auto;padding:0 20px 48px}
@@ -18,47 +18,51 @@ h1,h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;mar
 .top .in{max-width:960px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:800 22px "Bricolage Grotesque",sans-serif}
 .logo{width:34px;height:34px;flex:none;fill:var(--sun)}
-.logo .x{fill:#10343a}
+.logo .x{fill:#fff}
 nav{display:flex;gap:6px;flex-wrap:wrap}
 button,input,textarea{font:inherit;color:var(--ink)}
-.btn{padding:8px 14px;border-radius:8px;border:1px solid var(--ink);background:transparent;cursor:pointer;font-weight:600}
+.btn{padding:8px 16px;border-radius:999px;border:2px solid var(--ink);background:transparent;cursor:pointer;font-weight:600;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
 a.btn{display:inline-block;text-decoration:none;color:var(--ink)}
-.btn[aria-current=page]{background:var(--ink);color:var(--paper)}
+.btn[aria-current=page]{background:var(--sun);border-color:var(--sun);color:#3a1220}
 .btn.pri{background:var(--ink);color:var(--paper)}
-.btn.sun{background:var(--sun);border-color:var(--sun);color:#2b1f00}
+.btn.sun{background:var(--sun);border-color:var(--sun);color:#3a1220}
 .btn.bad{border-color:var(--bad);color:var(--bad)}
 h1{font-size:clamp(30px,5vw,48px);margin:24px 0 10px}
 .lead{color:var(--mute);max-width:56ch;margin:0 0 22px}
-.hero{position:relative;overflow:hidden;border-radius:22px;margin:20px 0 28px;padding:56px 32px;color:#fff;background:linear-gradient(120deg,#0b3d46,#14707b,#0b3d46);background-size:220% 220%;animation:flow 14s ease infinite}
-.hero .in{position:relative;max-width:560px}
+.hero{position:relative;overflow:hidden;width:100vw;margin:0 0 0 calc(50% - 50vw);min-height:calc(100vh - 64px);min-height:calc(100svh - 64px);display:flex;align-items:center;padding:56px max(20px,calc(50vw - 460px));color:#2b2d5b;background:#bcd4ff}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(188,212,255,.82),rgba(255,194,203,.78)),url(bg.jpg) center/cover no-repeat,linear-gradient(135deg,#bcd4ff,#ffc2cb);animation:kb 26s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.14)}}
+.hero .in{position:relative;z-index:1;max-width:560px}
 .hero .logo{width:76px;height:76px;margin-bottom:14px}
-.hero h1{margin:0 0 12px;color:#fff}
+.hero h1{margin:0 0 12px;color:#2b2d5b}
 .hero p{margin:0 0 18px;font-size:19px}
-.b{position:absolute;border-radius:50%;opacity:.35;animation:float 9s ease-in-out infinite}
-.b1{width:280px;height:280px;background:#f2b83d;right:-70px;top:-90px}
-.b2{width:190px;height:190px;background:#7fd6dc;right:150px;bottom:-80px;animation-delay:-3s}
+.b{position:absolute;border-radius:50%;opacity:.65;animation:float 9s ease-in-out infinite}
+.b1{width:280px;height:280px;background:#ff9aa8;right:-70px;top:-90px}
+.b2{width:190px;height:190px;background:#8fb8ff;right:150px;bottom:-80px;animation-delay:-3s}
 .b3{width:90px;height:90px;background:#fff;right:38%;top:18px;animation-delay:-6s}
 @keyframes flow{50%{background-position:100% 50%}}
 @keyframes float{50%{transform:translateY(-18px)}}
-@media (prefers-reduced-motion:reduce){.hero,.b{animation:none}}
-.cta{display:inline-block;text-decoration:none;font-size:18px;padding:12px 22px;border-radius:10px;background:var(--sun);color:#2b1f00;font-weight:700}
+@media (prefers-reduced-motion:reduce){.hero::before,.b{animation:none}}
+.cta{display:inline-block;text-decoration:none;font-size:18px;padding:13px 26px;border-radius:999px;background:#2b2d5b;color:#fff;font-weight:700;box-shadow:4px 4px 0 #ff9aa8;transition:transform .15s}
+.cta:hover{transform:translateY(-2px)}
 address{font-style:normal;font-size:16px;margin-top:20px;line-height:1.7}
-.card{background:var(--panel);border:2px solid var(--ink);border-radius:16px;padding:14px}
-input[type=search],input[type=email],input[type=password],input[type=text],input[type=file],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.card{background:var(--panel);border:2px solid var(--ink);border-radius:22px;padding:16px;box-shadow:5px 5px 0 var(--blue)}
+input[type=search],input[type=email],input[type=password],input[type=text],input[type=file],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
 label{display:block;font-weight:600;font-size:15px;margin:12px 0 4px}
 ul.list{list-style:none;margin:10px 0 0;padding:0}
 ul.list>li{border-bottom:1px solid var(--line)}
 .row{display:block;width:100%;padding:10px;background:transparent;border:0;text-align:left;cursor:pointer}
 .row:hover{background:var(--mist)}.row small{color:var(--mute)}
 .tag{font-size:13px;font-weight:600;background:var(--mist);padding:2px 8px;border-radius:6px;white-space:nowrap}
-.tag.pending{background:var(--sun);color:#2b1f00}
+.tag.pending{background:var(--sun);color:#3a1220}
 .detail{background:var(--mist);padding:12px 16px;margin:0 0 8px;border-radius:10px;overflow:auto}
 .detail strong{display:block;margin-top:10px}
 .detail div{white-space:pre-wrap}
 .dimg{float:right;max-width:min(220px,40%);margin:0 0 8px 14px;border-radius:10px}
 .meta{font-size:14px;color:var(--mute);margin-top:10px}
 .hint{font-size:14px;color:var(--mute);margin:4px 0 0}
-.msg{margin:10px 0;font-weight:600}.msg.err{color:var(--bad)}
+.msg{margin:10px 0;font-weight:600}.msg:empty{display:none}.msg.err{color:var(--bad)}
 .bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
 .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .tool{padding:20px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
@@ -73,23 +77,21 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:v
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lg" viewBox="0 0 40 40"><path d="M20 2a18 18 0 1 1-9.5 33.3L3 38l2.7-7.4A18 18 0 0 1 20 2z"/><rect class="x" x="18" y="10" width="4" height="20" rx="1"/><rect class="x" x="10" y="18" width="20" height="4" rx="1"/></symbol></svg>
 
-<div class="top">
-  <div class="in">
-    <a class="brand" href="#/">
+<div class="top"><div class="in">
+  <!-- To use your own logo, replace the <svg class="logo"> with: <img src="logo.png" alt="BVYHCTPY" height="34"> -->
+  <a class="brand" href="#/">
       <img src="logo.png" alt="BVYHCTPY" class="logo">
       BVYHCTPY
     </a>
-
-    <nav>
-      <a class="btn" id="nHome" href="#/">Trang chủ</a>
-      <a class="btn" id="nSearch" href="#/tra-cuu">Tra cứu thuốc</a>
-      <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
-      <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
-      <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
-      <button class="btn" id="nOut" hidden>Đăng xuất</button>
-    </nav>
-  </div>
-</div>
+  <nav>
+    <a class="btn" id="nHome" href="#/">Trang chủ</a>
+    <a class="btn" id="nSearch" href="#/tra-cuu">Tra cứu thuốc</a>
+    <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
+    <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
+    <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
+    <button class="btn" id="nOut" hidden>Đăng xuất</button>
+  </nav>
+</div></div>
 
 <div class="wrap">
 <div id="msg" class="msg" role="alert"></div>
@@ -104,7 +106,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:v
       <a class="cta" href="#/tra-cuu">Bắt đầu tra cứu</a>
       <address>
         Điện thoại: 028 0000 0000<br>
-        Email: <a href="mailto:lienhe@example.com" style="color:#fff">lienhe@example.com</a><br>
+        Email: <a href="mailto:lienhe@example.com" style="color:inherit">lienhe@example.com</a><br>
         Địa chỉ: [Địa chỉ bệnh viện]
       </address>
     </div>
