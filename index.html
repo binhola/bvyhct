@@ -73,18 +73,23 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:v
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lg" viewBox="0 0 40 40"><path d="M20 2a18 18 0 1 1-9.5 33.3L3 38l2.7-7.4A18 18 0 0 1 20 2z"/><rect class="x" x="18" y="10" width="4" height="20" rx="1"/><rect class="x" x="10" y="18" width="20" height="4" rx="1"/></symbol></svg>
 
-<div class="top"><div class="in">
-  <!-- To use your own logo, replace the <svg class="logo"> with: <img src="logo.png" alt="BVYHCTPY" height="34"> -->
-  <a class="brand" href="#/"><svg class="logo" role="img" aria-label="Logo"><use href="#lg"/></svg>BVYHCTPY</a>
-  <nav>
-    <a class="btn" id="nHome" href="#/">Trang chủ</a>
-    <a class="btn" id="nSearch" href="#/tra-cuu">Tra cứu thuốc</a>
-    <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
-    <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
-    <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
-    <button class="btn" id="nOut" hidden>Đăng xuất</button>
-  </nav>
-</div></div>
+<div class="top">
+  <div class="in">
+    <a class="brand" href="#/">
+      <img src="logo.png" alt="BVYHCTPY" class="logo">
+      BVYHCTPY
+    </a>
+
+    <nav>
+      <a class="btn" id="nHome" href="#/">Trang chủ</a>
+      <a class="btn" id="nSearch" href="#/tra-cuu">Tra cứu thuốc</a>
+      <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
+      <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
+      <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
+      <button class="btn" id="nOut" hidden>Đăng xuất</button>
+    </nav>
+  </div>
+</div>
 
 <div class="wrap">
 <div id="msg" class="msg" role="alert"></div>
