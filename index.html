@@ -50,6 +50,9 @@ address{font-style:normal;font-size:16px;margin-top:20px;line-height:1.7}
 .card{background:var(--panel);border:2px solid var(--ink);border-radius:22px;padding:16px;box-shadow:5px 5px 0 var(--blue)}
 input[type=search],input[type=email],input[type=password],input[type=text],input[type=file],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
 label{display:block;font-weight:600;font-size:15px;margin:12px 0 4px}
+.az{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.az button{min-width:36px;padding:5px 12px;border-radius:999px;border:2px solid var(--line);background:var(--paper);cursor:pointer;font-weight:600}
+.az button[aria-pressed=true]{background:var(--sun);border-color:var(--sun);color:#3a1220}
 ul.list{list-style:none;margin:10px 0 0;padding:0}
 ul.list>li{border-bottom:1px solid var(--line)}
 .row{display:block;width:100%;padding:10px;background:transparent;border:0;text-align:left;cursor:pointer}
@@ -119,6 +122,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:v
   <div class="card">
     <label for="q" style="margin-top:0">Tên thuốc hoặc hoạt chất</label>
     <input id="q" type="search" autocomplete="off">
+    <div class="az" id="az" role="group" aria-label="Xem danh sách theo chữ cái"></div>
     <ul class="list" id="res"></ul>
   </div>
 </section>
@@ -206,18 +210,26 @@ function detail(x){
   const pdf = x.pdf_path ? `<strong>Tài liệu tham khảo</strong><div><a href="${esc(url(x.pdf_path))}" target="_blank" rel="noopener">Tờ hướng dẫn sử dụng thuốc (PDF)</a></div>` : "";
   return `<div class="detail">${img}${body}${pdf}<div class="meta">Cập nhật: ${d(x.updated_at)}</div></div>`;
 }
+let letter = null, limit = 20;
+const first = s => norm(s).trim().charAt(0).toUpperCase();
+function renderAZ(){
+  const L = [...new Set(pub.map(x => first(x.name)).filter(c => /[A-Z]/.test(c)))].sort();
+  $("#az").innerHTML = [`<button data-l="*" aria-pressed="${letter==="*"}">Xem toàn bộ (${pub.length})</button>`].concat(L.map(c => `<button data-l="${c}" aria-pressed="${letter===c}">${c}</button>`)).join("");
+}
 function renderSearch(){
+  renderAZ();
   const t = norm($("#q").value.trim());
-  if (!t) { $("#res").innerHTML = note("Nhập tên thuốc hoặc hoạt chất để bắt đầu tìm."); return; }
-  const out = pub.filter(x => norm(x.name).includes(t) || norm(x.active_ingredient).includes(t));
-  const shown = out.slice(0, 20);
+  if (!t && !letter) { $("#res").innerHTML = note("Nhập tên thuốc hoặc hoạt chất để tìm, hoặc chọn \"Xem toàn bộ\" / một chữ cái để xem danh sách."); return; }
+  const out = t ? pub.filter(x => norm(x.name).includes(t) || norm(x.active_ingredient).includes(t)) : pub.filter(x => letter === "*" || first(x.name) === letter);
+  const shown = out.slice(0, limit);
   $("#res").innerHTML = shown.length ? shown.map(x => {
     const sub = [x.active_ingredient, x.strength].filter(Boolean).join(" · ");
     return `<li><button class="row" data-id="${x.id}" aria-expanded="${openId===x.id}"><b>${esc(x.name)}</b><br><small>${esc(sub)}</small></button>${openId===x.id ? detail(x) : ""}</li>`;
-  }).join("") + (out.length > 20 ? note(`Có ${out.length} kết quả, đang hiển thị 20 đầu tiên. Nhập thêm để thu hẹp.`) : "") : note("Không tìm thấy thuốc phù hợp. Thử tên hoạt chất.");
+  }).join("") + (out.length > limit ? `<li style="padding:10px"><button class="btn" id="more">Xem thêm (còn ${out.length - limit})</button></li>` : "") : note("Không tìm thấy thuốc phù hợp. Thử tên hoạt chất.");
 }
-$("#res").onclick = e => { const b = e.target.closest(".row[data-id]"); if(!b) return; openId = openId === b.dataset.id ? null : b.dataset.id; renderSearch(); };
-$("#q").oninput = () => { openId = null; renderSearch(); };
+$("#res").onclick = e => { if (e.target.id === "more") { limit += 50; renderSearch(); return; } const b = e.target.closest(".row[data-id]"); if(!b) return; openId = openId === b.dataset.id ? null : b.dataset.id; renderSearch(); };
+$("#q").oninput = () => { letter = null; limit = 20; openId = null; renderSearch(); };
+$("#az").onclick = e => { const b = e.target.closest("button[data-l]"); if (!b) return; letter = b.dataset.l; $("#q").value = ""; limit = 50; openId = null; renderSearch(); };
 
 /* ---------- Auth ---------- */
 async function refreshAuth(){
