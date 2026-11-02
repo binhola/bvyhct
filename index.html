@@ -62,6 +62,7 @@ input[type=search],input[type=email],input[type=password],input[type=text],input
 label{display:block;font-weight:600;font-size:15px;margin:12px 0 4px}
 .az{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
 .az button{min-width:36px;padding:5px 12px;border-radius:999px;border:2px solid var(--line);background:var(--paper);cursor:pointer;font-weight:600}
+.az .close{border-color:var(--ink);margin-left:auto}
 .az button[aria-pressed=true]{background:var(--sun);border-color:var(--sun);color:#3a1220}
 ul.list{list-style:none;margin:10px 0 0;padding:0}
 ul.list>li{border-bottom:1px solid var(--line)}
@@ -256,7 +257,7 @@ let letter = null, limit = 20;
 const first = s => norm(s).trim().charAt(0).toUpperCase();
 function renderAZ(){
   const L = [...new Set(pub.map(x => first(x.name)).filter(c => /[A-Z]/.test(c)))].sort();
-  $("#az").innerHTML = [`<button data-l="*" aria-pressed="${letter==="*"}">Xem toàn bộ (${pub.length})</button>`].concat(L.map(c => `<button data-l="${c}" aria-pressed="${letter===c}">${c}</button>`)).join("");
+  $("#az").innerHTML = [`<button data-l="*" aria-pressed="${letter==="*"}">Xem toàn bộ (${pub.length})</button>`].concat(L.map(c => `<button data-l="${c}" aria-pressed="${letter===c}">${c}</button>`)).concat(letter ? [`<button data-l="" class="close">Đóng danh sách ✕</button>`] : []).join("");
 }
 function renderSearch(){
   renderAZ();
@@ -271,7 +272,7 @@ function renderSearch(){
 }
 $("#res").onclick = e => { if (e.target.id === "more") { limit += 50; renderSearch(); return; } const b = e.target.closest(".row[data-id]"); if(!b) return; openId = openId === b.dataset.id ? null : b.dataset.id; renderSearch(); };
 $("#q").oninput = () => { letter = null; limit = 20; openId = null; renderSearch(); };
-$("#az").onclick = e => { const b = e.target.closest("button[data-l]"); if (!b) return; letter = b.dataset.l; $("#q").value = ""; limit = 50; openId = null; renderSearch(); };
+$("#az").onclick = e => { const b = e.target.closest("button[data-l]"); if (!b) return; letter = (b.dataset.l === "" || b.dataset.l === letter) ? null : b.dataset.l; $("#q").value = ""; limit = 50; openId = null; renderSearch(); };
 
 /* ---------- Auth ---------- */
 async function refreshAuth(){
