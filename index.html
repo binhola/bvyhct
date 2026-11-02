@@ -71,8 +71,13 @@ ul.list>li{border-bottom:1px solid var(--line)}
 .tag{font-size:13px;font-weight:600;background:var(--mist);padding:2px 8px;border-radius:6px;white-space:nowrap}
 .tag.pending{background:var(--sun);color:#3a1220}
 .detail{background:var(--mist);padding:12px 16px;margin:0 0 8px;border-radius:10px;overflow:auto}
-.detail strong{display:block;margin-top:10px}
-.detail div{white-space:pre-wrap}
+.sec{display:flow-root;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:14px;padding:12px 16px;margin:0 0 12px}
+.sec.warn{border-left-color:var(--sun)}
+.sec h3{margin:0 0 6px;font:700 17px "Bricolage Grotesque",system-ui,sans-serif}
+.sec p{margin:4px 0}
+.sec ul{margin:4px 0;padding-left:22px}
+.sec li{margin:3px 0}
+.sec li.l2{margin-left:22px;list-style:circle}
 .dimg{float:right;max-width:min(220px,40%);margin:0 0 8px 14px;border-radius:10px}
 .meta{font-size:14px;color:var(--mute);margin-top:10px}
 .hint{font-size:14px;color:var(--mute);margin:4px 0 0}
@@ -185,6 +190,7 @@ nav{order:2;margin-left:auto}
   <div class="card scroll"><table><thead><tr><th>Tên thuốc</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
   <form id="ef" class="card" style="margin-top:16px" hidden>
     <h2 id="eh" style="font-size:22px"></h2>
+    <p class="hint">Mẹo trình bày: bắt đầu dòng bằng <b>-</b> để tạo gạch đầu dòng, bằng <b>+</b> để tạo ý nhỏ bên dưới. Mỗi dòng là một ý riêng.</p>
     <div id="fields"></div>
     <label for="f_pdf">9. Tài liệu tham khảo (tờ hướng dẫn sử dụng, file PDF)</label>
     <input type="file" id="f_pdf" accept="application/pdf"><p class="hint" id="c_pdf"></p>
@@ -247,10 +253,24 @@ async function loadPublic(){
 }
 const norm = s => String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").toLowerCase();
 const note = t => `<li style="padding:12px 10px;color:var(--mute)">${t}</li>`;
+function fmt(t){
+  const L = String(t || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  let out = "", open = false;
+  for (const l of L){
+    const b = l.match(/^[-•*–]\s*(.+)/), s = l.match(/^\+\s*(.+)/);
+    if (b || s){ if (!open){ out += "<ul>"; open = true; } out += `<li class="${s ? "l2" : "l1"}">${esc((s || b)[1])}</li>`; }
+    else {
+      if (open){ out += "</ul>"; open = false; }
+      const m = l.match(/^([^:]{2,28}):\s*(.*)$/);
+      out += m ? `<p><b>${esc(m[1])}:</b> ${esc(m[2])}</p>` : `<p>${esc(l)}</p>`;
+    }
+  }
+  return out + (open ? "</ul>" : "");
+}
 function detail(x){
   const img = x.image_path ? `<img class="dimg" src="${esc(url(x.image_path))}" alt="Hình ảnh ${esc(x.name)} tại bệnh viện" loading="lazy">` : "";
-  const body = SECT.filter(p => x[p[0]]).map(p => `<strong>${p[1]}</strong><div>${esc(x[p[0]])}</div>`).join("");
-  const pdf = x.pdf_path ? `<strong>Tài liệu tham khảo</strong><div><a href="${esc(url(x.pdf_path))}" target="_blank" rel="noopener">Tờ hướng dẫn sử dụng thuốc (PDF)</a></div>` : "";
+  const body = SECT.filter(p => x[p[0]]).map(p => `<section class="sec${p[0] === "contraindications" ? " warn" : ""}"><h3>${p[1]}</h3>${fmt(x[p[0]])}</section>`).join("");
+  const pdf = x.pdf_path ? `<section class="sec"><h3>Tài liệu tham khảo</h3><p><a href="${esc(url(x.pdf_path))}" target="_blank" rel="noopener">Tờ hướng dẫn sử dụng thuốc (PDF)</a></p></section>` : "";
   return `<div class="detail">${img}${body}${pdf}<div class="meta">Cập nhật: ${d(x.updated_at)}</div></div>`;
 }
 let letter = null, limit = 20;
