@@ -3,72 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BVYHCTPY – Tra cứu thuốc nhi khoa</title>
+<title>BVYHCTPY – Tra cứu thuốc</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#10343a;--paper:#f7fbfb;--panel:#fff;--mist:#dceef0;--line:#c5dde0;--sun:#f2b83d;--mute:#4d6b70;--bad:#b3261e;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root{--ink:#e6f4f5;--paper:#0d2226;--panel:#13302f;--mist:#17393d;--line:#264a4e;--mute:#9bbcc0;--bad:#ff8a80}}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 "Source Sans 3",system-ui,sans-serif}
 h1,h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0}
 :focus-visible{outline:3px solid var(--sun);outline-offset:2px}
-.wrap{max-width:920px;margin:0 auto;padding:0 20px 48px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0}
-.brand{font:800 22px "Bricolage Grotesque",sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px 48px}
+.top{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top .in{max-width:960px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:800 22px "Bricolage Grotesque",sans-serif}
+.logo{width:34px;height:34px;flex:none;fill:var(--sun)}
+.logo .x{fill:#10343a}
 nav{display:flex;gap:6px;flex-wrap:wrap}
-button,input,textarea,select{font:inherit;color:var(--ink)}
+button,input,textarea{font:inherit;color:var(--ink)}
 .btn{padding:8px 14px;border-radius:8px;border:1px solid var(--ink);background:transparent;cursor:pointer;font-weight:600}
+a.btn{display:inline-block;text-decoration:none;color:var(--ink)}
+.btn[aria-current=page]{background:var(--ink);color:var(--paper)}
 .btn.pri{background:var(--ink);color:var(--paper)}
 .btn.sun{background:var(--sun);border-color:var(--sun);color:#2b1f00}
 .btn.bad{border-color:var(--bad);color:var(--bad)}
-h1{font-size:clamp(30px,5vw,48px);max-width:16ch;margin:20px 0 10px}
+h1{font-size:clamp(30px,5vw,48px);margin:24px 0 10px}
 .lead{color:var(--mute);max-width:56ch;margin:0 0 22px}
+.hero{position:relative;overflow:hidden;border-radius:22px;margin:20px 0 28px;padding:56px 32px;color:#fff;background:linear-gradient(120deg,#0b3d46,#14707b,#0b3d46);background-size:220% 220%;animation:flow 14s ease infinite}
+.hero .in{position:relative;max-width:560px}
+.hero .logo{width:76px;height:76px;margin-bottom:14px}
+.hero h1{margin:0 0 12px;color:#fff}
+.hero p{margin:0 0 18px;font-size:19px}
+.b{position:absolute;border-radius:50%;opacity:.35;animation:float 9s ease-in-out infinite}
+.b1{width:280px;height:280px;background:#f2b83d;right:-70px;top:-90px}
+.b2{width:190px;height:190px;background:#7fd6dc;right:150px;bottom:-80px;animation-delay:-3s}
+.b3{width:90px;height:90px;background:#fff;right:38%;top:18px;animation-delay:-6s}
+@keyframes flow{50%{background-position:100% 50%}}
+@keyframes float{50%{transform:translateY(-18px)}}
+@media (prefers-reduced-motion:reduce){.hero,.b{animation:none}}
+.cta{display:inline-block;text-decoration:none;font-size:18px;padding:12px 22px;border-radius:10px;background:var(--sun);color:#2b1f00;font-weight:700}
+address{font-style:normal;font-size:16px;margin-top:20px;line-height:1.7}
 .card{background:var(--panel);border:2px solid var(--ink);border-radius:16px;padding:14px}
-input[type=search],input[type=email],input[type=password],input[type=text],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+input[type=search],input[type=email],input[type=password],input[type=text],input[type=file],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
 label{display:block;font-weight:600;font-size:15px;margin:12px 0 4px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.chip{padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-size:14px;font-weight:600}
-.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-ul.list{list-style:none;margin:0;padding:0}
+ul.list{list-style:none;margin:10px 0 0;padding:0}
 ul.list>li{border-bottom:1px solid var(--line)}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:10px;background:transparent;border:0;text-align:left;cursor:pointer}
-.row:hover{background:var(--mist)}
+.row{display:block;width:100%;padding:10px;background:transparent;border:0;text-align:left;cursor:pointer}
+.row:hover{background:var(--mist)}.row small{color:var(--mute)}
 .tag{font-size:13px;font-weight:600;background:var(--mist);padding:2px 8px;border-radius:6px;white-space:nowrap}
 .tag.pending{background:var(--sun);color:#2b1f00}
-.detail{background:var(--mist);padding:12px 16px;margin:0 0 8px;border-radius:10px}
-.detail strong{display:block;margin-top:8px}.detail strong:first-child{margin-top:0}
+.detail{background:var(--mist);padding:12px 16px;margin:0 0 8px;border-radius:10px;overflow:auto}
+.detail strong{display:block;margin-top:10px}
 .detail div{white-space:pre-wrap}
+.dimg{float:right;max-width:min(220px,40%);margin:0 0 8px 14px;border-radius:10px}
 .meta{font-size:14px;color:var(--mute);margin-top:10px}
+.hint{font-size:14px;color:var(--mute);margin:4px 0 0}
 .msg{margin:10px 0;font-weight:600}.msg.err{color:var(--bad)}
 .bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.tool{padding:20px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
+.tool h2{font-size:21px;margin-bottom:8px}.tool p{margin:0 0 12px;color:var(--mute)}
 table{width:100%;border-collapse:collapse;font-size:15px}
 td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 .scroll{overflow-x:auto}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:var(--mute);font-size:15px}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <span class="brand">BVYHCTPY</span>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lg" viewBox="0 0 40 40"><path d="M20 2a18 18 0 1 1-9.5 33.3L3 38l2.7-7.4A18 18 0 0 1 20 2z"/><rect class="x" x="18" y="10" width="4" height="20" rx="1"/><rect class="x" x="10" y="18" width="20" height="4" rx="1"/></symbol></svg>
+
+<div class="top"><div class="in">
+  <!-- To use your own logo, replace the <svg class="logo"> with: <img src="logo.png" alt="BVYHCTPY" height="34"> -->
+  <a class="brand" href="#/"><svg class="logo" role="img" aria-label="Logo"><use href="#lg"/></svg>BVYHCTPY</a>
   <nav>
-    <button class="btn" id="nSearch">Tra cứu</button>
-    <button class="btn" id="nAdmin" hidden>Quản lý dữ liệu</button>
-    <button class="btn" id="nAudit" hidden>Nhật ký thay đổi</button>
-    <button class="btn" id="nLogin">Đăng nhập</button>
+    <a class="btn" id="nHome" href="#/">Trang chủ</a>
+    <a class="btn" id="nSearch" href="#/tra-cuu">Tra cứu thuốc</a>
+    <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
+    <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
+    <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
     <button class="btn" id="nOut" hidden>Đăng xuất</button>
   </nav>
-</header>
+</div></div>
+
+<div class="wrap">
 <div id="msg" class="msg" role="alert"></div>
 
-<section id="vSearch">
-  <h1>Tra cứu thuốc Bệnh viện YHCT Phú Yên</h1>
-  <p class="lead">Hoàn nguyên, tương tác, tương hợp – tương kỵ và thuốc đa liều theo danh mục của bệnh viện.</p>
+<section id="vHome">
+  <div class="hero">
+    <span class="b b1"></span><span class="b b2"></span><span class="b b3"></span>
+    <div class="in">
+      <svg class="logo" role="img" aria-label="Logo"><use href="#lg"/></svg>
+      <h1>Tra cứu thuốc – Khoa Dược Bệnh viện YHCT Phú Yên</h1>
+      <p>Thông tin thuốc dành cho bác sĩ, dược sĩ và điều dưỡng.</p>
+      <a class="cta" href="#/tra-cuu">Bắt đầu tra cứu</a>
+      <address>
+        Điện thoại: 028 0000 0000<br>
+        Email: <a href="mailto:lienhe@example.com" style="color:#fff">lienhe@example.com</a><br>
+        Địa chỉ: [Địa chỉ bệnh viện]
+      </address>
+    </div>
+  </div>
+</section>
+
+<section id="vSearch" hidden>
+  <h1>Tra cứu thuốc</h1>
+  <p class="lead">Nhập tên thuốc hoặc hoạt chất để xem thông tin chi tiết.</p>
   <div class="card">
-    <label for="q" style="margin-top:0">Nhập tên thuốc hoặc hoạt chất</label>
+    <label for="q" style="margin-top:0">Tên thuốc hoặc hoạt chất</label>
     <input id="q" type="search" autocomplete="off">
-    <div class="chips" id="chips"></div>
     <ul class="list" id="res"></ul>
   </div>
 </section>
@@ -88,12 +131,12 @@ td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-a
   <div class="card scroll"><table><thead><tr><th>Tên thuốc</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
   <form id="ef" class="card" style="margin-top:16px" hidden>
     <h2 id="eh" style="font-size:22px"></h2>
-    <label for="f_name">Tên thuốc</label><input type="text" id="f_name" required>
-    <label for="f_reconstitution">Hoàn nguyên</label><textarea id="f_reconstitution" rows="3"></textarea>
-    <label for="f_interactions">Tương tác</label><textarea id="f_interactions" rows="3"></textarea>
-    <label for="f_compatibility">Tương hợp – tương kỵ</label><textarea id="f_compatibility" rows="3"></textarea>
-    <label for="f_multidose">Thuốc đa liều</label><textarea id="f_multidose" rows="3"></textarea>
-    <label for="f_source">Nguồn tài liệu (bắt buộc khi gửi duyệt)</label><input type="text" id="f_source">
+    <div id="fields"></div>
+    <label for="f_pdf">9. Tài liệu tham khảo (tờ hướng dẫn sử dụng, file PDF)</label>
+    <input type="file" id="f_pdf" accept="application/pdf"><p class="hint" id="c_pdf"></p>
+    <label for="f_img">10. Hình ảnh thuốc tại Bệnh viện</label>
+    <input type="file" id="f_img" accept="image/jpeg,image/png,image/webp"><p class="hint" id="c_img"></p>
+    <p class="hint">Mỗi tệp tối đa 10 MB. Cần có file PDF trước khi gửi duyệt.</p>
     <div class="bar" id="eb"></div>
   </form>
 </section>
@@ -102,25 +145,45 @@ td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-a
   <h2>Nhật ký thay đổi</h2>
   <div class="card scroll" style="margin-top:16px"><table><thead><tr><th>Thời gian</th><th>Người thực hiện</th><th>Thao tác</th><th>Thuốc</th></tr></thead><tbody id="ab"></tbody></table></div>
 </section>
+<footer>Khoa Dược Bệnh viện YHCT Phú Yên. Thông tin dành cho cán bộ y tế.</footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-// 1) Paste your own values from Supabase: Project Settings > API
-const SUPABASE_URL = "https://fsmjghlzgjyoriumvlwp.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbWpnaGx6Z2p5b3JpdW12bHdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1MTY5MTEsImV4cCI6MjEwOTA5MjkxMX0.MVOtO5S1JcfufEdwVyuY9jpyM2dcmfu7jQ3iTOBHHzE";
+// Paste your own values from Supabase: Project Settings > API
+const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+const SUPABASE_KEY = "YOUR-ANON-PUBLIC-KEY";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const FIELDS = [["reconstitution","Hoàn nguyên"],["interactions","Tương tác"],["compatibility","Tương hợp – tương kỵ"],["multidose","Thuốc đa liều"]];
+const FD = [["name","1. Tên thuốc","t"],["active_ingredient","2. Hoạt chất / Thành phần của thuốc","t"],["strength","3. Nồng độ / Hàm lượng","t"],["indications","4. Chỉ định","a"],["contraindications","5. Chống chỉ định","a"],["dosage","6. Liều dùng – Cách dùng","a"],["interactions","7. Tương tác – Tương kỵ","a"],["side_effects","8. Tác dụng không mong muốn","a"]];
+const SECT = FD.slice(1).map(p => [p[0], p[1].replace(/^\d+\.\s*/, "")]);
 const ST = {draft:"Nháp", pending:"Chờ duyệt", published:"Đã xuất bản"};
-const VIEWS = ["Search","Login","Admin","Audit"];
-let role = null, pub = [], f = "", openId = null, editing = null;
+const BUCKET = "drug-files", MAXB = 10 * 1048576;
+const VIEWS = ["Home","Search","Login","Admin","Audit"];
+const ROUTES = {"":"Home","/":"Home","/tra-cuu":"Search","/dang-nhap":"Login","/quan-ly":"Admin","/nhat-ky":"Audit"};
+let role = null, pub = [], openId = null, editing = null, flash = null;
 
-function show(v){VIEWS.forEach(x => $("#v"+x).hidden = x !== v); say("")}
-function say(t, err){const m=$("#msg"); m.textContent=t; m.className="msg"+(err?" err":"")}
+$("#fields").innerHTML = FD.map(p => `<label for="f_${p[0]}">${p[1]}</label>` + (p[2] === "t" ? `<input type="text" id="f_${p[0]}">` : `<textarea id="f_${p[0]}" rows="3"></textarea>`)).join("");
+
 const d = s => s ? new Date(s).toLocaleString("vi-VN") : "";
+const url = p => sb.storage.from(BUCKET).getPublicUrl(p).data.publicUrl;
+function say(t, err){const m=$("#msg"); m.textContent=t; m.className="msg"+(err?" err":"")}
+function show(v){VIEWS.forEach(x => $("#v"+x).hidden = x !== v); say("")}
+const go = p => { location.hash = "#" + p; };
+function route(){
+  let v = ROUTES[location.hash.replace(/^#/, "")] || "Home";
+  if ((v === "Admin" && !role) || (v === "Audit" && role !== "approver")) v = "Login";
+  show(v);
+  const H = {Home:"#/", Search:"#/tra-cuu", Login:"#/dang-nhap", Admin:"#/quan-ly", Audit:"#/nhat-ky"};
+  document.querySelectorAll("nav a").forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === H[v] ? "page" : "false"));
+  if (v === "Search") loadPublic();
+  if (v === "Admin") loadAdmin();
+  if (v === "Audit") loadAudit();
+  window.scrollTo(0, 0);
+  if (flash) { say(flash.t, flash.e); flash = null; }
+}
 
 /* ---------- Public search ---------- */
 async function loadPublic(){
@@ -128,19 +191,24 @@ async function loadPublic(){
   if (error) return say("Không tải được dữ liệu: " + error.message, true);
   pub = data; renderSearch();
 }
-function norm(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").toLowerCase()}
+const norm = s => String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").toLowerCase();
+const note = t => `<li style="padding:12px 10px;color:var(--mute)">${t}</li>`;
+function detail(x){
+  const img = x.image_path ? `<img class="dimg" src="${esc(url(x.image_path))}" alt="Hình ảnh ${esc(x.name)} tại bệnh viện" loading="lazy">` : "";
+  const body = SECT.filter(p => x[p[0]]).map(p => `<strong>${p[1]}</strong><div>${esc(x[p[0]])}</div>`).join("");
+  const pdf = x.pdf_path ? `<strong>Tài liệu tham khảo</strong><div><a href="${esc(url(x.pdf_path))}" target="_blank" rel="noopener">Tờ hướng dẫn sử dụng thuốc (PDF)</a></div>` : "";
+  return `<div class="detail">${img}${body}${pdf}<div class="meta">Cập nhật: ${d(x.updated_at)}</div></div>`;
+}
 function renderSearch(){
   const t = norm($("#q").value.trim());
-  const out = pub.filter(x => (!t || norm(x.name).includes(t)) && (!f || x[f]));
-  $("#res").innerHTML = out.length ? out.map(x => {
-    const tags = FIELDS.filter(p => x[p[0]]).map(p => `<span class="tag">${p[1]}</span>`).join(" ");
-    const det = openId === x.id ? `<div class="detail">${FIELDS.filter(p=>x[p[0]]).map(p=>`<strong>${p[1]}</strong><div>${esc(x[p[0]])}</div>`).join("")}<div class="meta">Nguồn: ${esc(x.source)} · Cập nhật: ${d(x.updated_at)}</div></div>` : "";
-    return `<li><button class="row" data-id="${x.id}" aria-expanded="${openId===x.id}"><span>${esc(x.name)}</span><span>${tags}</span></button>${det}</li>`;
-  }).join("") : `<li class="row">Không tìm thấy thuốc phù hợp. Thử tên hoạt chất hoặc bỏ bộ lọc.</li>`;
+  if (!t) { $("#res").innerHTML = note("Nhập tên thuốc hoặc hoạt chất để bắt đầu tìm."); return; }
+  const out = pub.filter(x => norm(x.name).includes(t) || norm(x.active_ingredient).includes(t));
+  const shown = out.slice(0, 20);
+  $("#res").innerHTML = shown.length ? shown.map(x => {
+    const sub = [x.active_ingredient, x.strength].filter(Boolean).join(" · ");
+    return `<li><button class="row" data-id="${x.id}" aria-expanded="${openId===x.id}"><b>${esc(x.name)}</b><br><small>${esc(sub)}</small></button>${openId===x.id ? detail(x) : ""}</li>`;
+  }).join("") + (out.length > 20 ? note(`Có ${out.length} kết quả, đang hiển thị 20 đầu tiên. Nhập thêm để thu hẹp.`) : "") : note("Không tìm thấy thuốc phù hợp. Thử tên hoạt chất.");
 }
-$("#chips").innerHTML = [["", "Tất cả"]].concat(FIELDS).map(p => `<button class="chip" data-f="${p[0]}" aria-pressed="${p[0]===""}">${p[1]}</button>`).join("");
-$("#chips").onclick = e => { const c = e.target.closest(".chip"); if(!c) return; f = c.dataset.f; openId = null;
-  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c)); renderSearch(); };
 $("#res").onclick = e => { const b = e.target.closest(".row[data-id]"); if(!b) return; openId = openId === b.dataset.id ? null : b.dataset.id; renderSearch(); };
 $("#q").oninput = () => { openId = null; renderSearch(); };
 
@@ -154,20 +222,17 @@ async function refreshAuth(){
   }
   $("#nLogin").hidden = !!session; $("#nOut").hidden = !session;
   $("#nAdmin").hidden = !role; $("#nAudit").hidden = role !== "approver";
-  return session;
 }
 $("#lf").onsubmit = async e => {
   e.preventDefault();
   const {error} = await sb.auth.signInWithPassword({email:$("#em").value, password:$("#pw").value});
   if (error) return say("Đăng nhập không thành công. Kiểm tra lại email và mật khẩu.", true);
   $("#pw").value = ""; await refreshAuth();
-  if (role) { show("Admin"); loadAdmin(); } else { show("Search"); say("Tài khoản chưa được cấp quyền biên soạn. Liên hệ quản trị viên.", true); }
+  if (role) go("/quan-ly");
+  else { flash = {t:"Tài khoản chưa được cấp quyền biên soạn. Liên hệ quản trị viên.", e:true}; go("/tra-cuu"); }
 };
-$("#nOut").onclick = async () => { await sb.auth.signOut(); await refreshAuth(); show("Search"); };
-$("#nSearch").onclick = () => { show("Search"); loadPublic(); };
-$("#nLogin").onclick = () => show("Login");
-$("#nAdmin").onclick = () => { show("Admin"); loadAdmin(); };
-$("#nAudit").onclick = () => { show("Audit"); loadAudit(); };
+$("#nOut").onclick = async () => { await sb.auth.signOut(); await refreshAuth(); go("/"); route(); };
+window.addEventListener("hashchange", route);
 
 /* ---------- Editor / approver ---------- */
 async function loadAdmin(){
@@ -177,15 +242,16 @@ async function loadAdmin(){
   window._all = data;
   $("#tb").innerHTML = data.map(x => `<tr><td>${esc(x.name)}</td><td><span class="tag ${x.status}">${ST[x.status]}</span></td><td>${d(x.updated_at)}</td><td><button class="btn" data-id="${x.id}">Sửa</button></td></tr>`).join("") || `<tr><td colspan="4">Chưa có thuốc nào. Chọn "Thêm thuốc" để bắt đầu.</td></tr>`;
 }
-const FORM = ["name","source"].concat(FIELDS.map(p => p[0]));
 function openForm(x){
   editing = x; $("#ef").hidden = false;
   $("#eh").textContent = x ? "Sửa: " + x.name : "Thêm thuốc mới";
-  FORM.forEach(k => $("#f_"+k).value = x ? (x[k] || "") : "");
-  const locked = role === "editor" && x && x.status === "published";
+  FD.forEach(p => $("#f_"+p[0]).value = x ? (x[p[0]] || "") : "");
+  $("#f_pdf").value = ""; $("#f_img").value = "";
+  $("#c_pdf").innerHTML = x && x.pdf_path ? `Đã có file: <a href="${esc(url(x.pdf_path))}" target="_blank" rel="noopener">xem PDF</a>. Chọn file mới để thay thế.` : "";
+  $("#c_img").innerHTML = x && x.image_path ? `Đã có ảnh: <a href="${esc(url(x.image_path))}" target="_blank" rel="noopener">xem ảnh</a>. Chọn ảnh mới để thay thế.` : "";
   const b = $("#eb"); b.innerHTML = "";
   const mk = (txt, cls, fn) => { const e = document.createElement("button"); e.type="button"; e.className="btn "+cls; e.textContent=txt; e.onclick=fn; b.appendChild(e); };
-  if (locked) { b.textContent = "Mục đã xuất bản chỉ người duyệt mới sửa được."; return; }
+  if (role === "editor" && x && x.status === "published") { b.textContent = "Mục đã xuất bản chỉ người duyệt mới sửa được."; return; }
   mk("Lưu nháp", "", () => save("draft"));
   mk("Gửi duyệt", "pri", () => save("pending"));
   if (role === "approver") mk("Xuất bản", "sun", () => save("published"));
@@ -194,12 +260,23 @@ function openForm(x){
 }
 $("#add").onclick = () => openForm(null);
 $("#tb").onclick = e => { const b = e.target.closest("button[data-id]"); if (b) openForm(window._all.find(x => x.id === b.dataset.id)); };
+async function up(file, folder){
+  const ext = (file.name.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+  const {error} = await sb.storage.from(BUCKET).upload(path, file, {contentType:file.type});
+  if (error) throw error;
+  return path;
+}
 async function save(status){
-  const row = {status}; FORM.forEach(k => row[k] = $("#f_"+k).value.trim() || null);
+  const row = {status}; FD.forEach(p => row[p[0]] = $("#f_"+p[0]).value.trim() || null);
+  const pf = $("#f_pdf").files[0], im = $("#f_img").files[0];
   if (!row.name) return say("Nhập tên thuốc trước khi lưu.", true);
-  if (status !== "draft" && !row.source) return say("Nhập nguồn tài liệu trước khi gửi duyệt hoặc xuất bản.", true);
-  const q = editing ? sb.from("drugs").update(row).eq("id", editing.id) : sb.from("drugs").insert(row);
-  const {error} = await q;
+  if (pf && (pf.type !== "application/pdf" || pf.size > MAXB)) return say("File tài liệu phải là PDF, tối đa 10 MB.", true);
+  if (im && (!im.type.startsWith("image/") || im.size > MAXB)) return say("Hình ảnh phải là JPG, PNG hoặc WebP, tối đa 10 MB.", true);
+  if (status !== "draft" && !pf && !(editing && editing.pdf_path)) return say("Cần tải lên tờ hướng dẫn sử dụng (PDF) trước khi gửi duyệt hoặc xuất bản.", true);
+  try { if (pf) row.pdf_path = await up(pf, "pdf"); if (im) row.image_path = await up(im, "img"); }
+  catch (e) { return say("Không tải được tệp: " + e.message, true); }
+  const {error} = await (editing ? sb.from("drugs").update(row).eq("id", editing.id) : sb.from("drugs").insert(row));
   if (error) return say("Không lưu được: " + error.message, true);
   say(status === "published" ? "Đã xuất bản." : status === "pending" ? "Đã gửi duyệt." : "Đã lưu nháp."); loadAdmin();
 }
@@ -216,12 +293,10 @@ async function loadAudit(){
   if (error) return say("Không tải được nhật ký: " + error.message, true);
   const A = {INSERT:"Thêm", UPDATE:"Sửa", DELETE:"Xóa"};
   $("#ab").innerHTML = data.map(r => { const x = r.new_row || r.old_row || {};
-    const st = r.new_row ? " → " + ST[r.new_row.status] : "";
-    return `<tr><td>${d(r.at)}</td><td>${esc(r.actor_email)}</td><td>${A[r.action]}${st}</td><td>${esc(x.name)}</td></tr>`; }).join("");
+    return `<tr><td>${d(r.at)}</td><td>${esc(r.actor_email)}</td><td>${A[r.action]}${r.new_row ? " → " + ST[r.new_row.status] : ""}</td><td>${esc(x.name)}</td></tr>`; }).join("");
 }
 
-/* ---------- Start ---------- */
-refreshAuth().then(loadPublic);
+refreshAuth().then(route);
 </script>
 </body>
 </html>
