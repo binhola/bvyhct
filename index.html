@@ -139,6 +139,7 @@ nav{order:2;margin-left:auto}
     <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
     <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
       <a class="btn" id="nAcct" href="#/tai-khoan" hidden>Quản lý tài khoản</a>
+      <a class="btn" id="nPw" href="#/doi-mat-khau" hidden>Đổi mật khẩu</a>
     <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
     <button class="btn" id="nOut" hidden>Đăng xuất</button>
   </nav>
@@ -185,6 +186,7 @@ nav{order:2;margin-left:auto}
     <label for="em" style="margin-top:0">Email</label><input id="em" type="email" required autocomplete="username">
     <label for="pw">Mật khẩu</label><input id="pw" type="password" required autocomplete="current-password">
     <div class="bar"><button class="btn pri" type="submit">Đăng nhập</button></div>
+    <p class="hint">Quên mật khẩu? Liên hệ Khoa Dược để được gửi liên kết đặt lại mật khẩu.</p>
   </form>
 </section>
 
@@ -202,6 +204,28 @@ nav{order:2;margin-left:auto}
     <input type="file" id="f_img" accept="image/jpeg,image/png,image/webp"><p class="hint" id="c_img"></p>
     <p class="hint">Mỗi tệp tối đa 10 MB. Cần có file PDF trước khi gửi duyệt.</p>
     <div class="bar" id="eb"></div>
+  </form>
+</section>
+
+<section id="vResetPw" hidden>
+  <h2>Đặt lại mật khẩu</h2>
+  <form id="rf" class="card" style="max-width:420px;margin-top:16px">
+    <p class="hint" style="margin-top:0">Tạo mật khẩu mới cho tài khoản của bạn.</p>
+    <label for="rp1">Mật khẩu mới</label><input id="rp1" type="password" minlength="8" required autocomplete="new-password">
+    <label for="rp2">Xác nhận mật khẩu mới</label><input id="rp2" type="password" minlength="8" required autocomplete="new-password">
+    <p class="hint">Tối thiểu 8 ký tự.</p>
+    <div class="bar"><button class="btn pri" type="submit">Đặt lại mật khẩu</button></div>
+  </form>
+</section>
+
+<section id="vChangePw" hidden>
+  <h2>Đổi mật khẩu</h2>
+  <form id="cf" class="card" style="max-width:420px;margin-top:16px">
+    <label for="cp" style="margin-top:0">Mật khẩu hiện tại</label><input id="cp" type="password" required autocomplete="current-password">
+    <label for="cp1">Mật khẩu mới</label><input id="cp1" type="password" minlength="8" required autocomplete="new-password">
+    <label for="cp2">Xác nhận mật khẩu mới</label><input id="cp2" type="password" minlength="8" required autocomplete="new-password">
+    <p class="hint">Tối thiểu 8 ký tự. Sau khi đổi, các thiết bị khác đang đăng nhập sẽ bị đăng xuất.</p>
+    <div class="bar"><button class="btn pri" type="submit">Đổi mật khẩu</button></div>
   </form>
 </section>
 
@@ -233,7 +257,13 @@ nav{order:2;margin-left:auto}
     <div class="bar"><button class="btn sun" type="submit">Gửi lời mời</button></div>
     <p class="hint" id="im" role="status"></p>
   </form>
-  <div class="card scroll" style="margin-top:16px"><table><thead><tr><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Đăng nhập gần nhất</th></tr></thead><tbody id="acb"></tbody></table></div>
+  <div id="rbox" class="card" hidden style="margin-top:16px">
+    <p id="rmsg" class="hint" style="margin-top:0"></p>
+    <input id="rlink" type="text" readonly aria-label="Liên kết đặt lại mật khẩu">
+    <div class="bar"><button class="btn" type="button" id="rcopy">Sao chép liên kết</button></div>
+    <p class="hint">Gửi riêng cho đúng người. Liên kết chỉ dùng được một lần; ai có liên kết này đều có thể đặt mật khẩu mới cho tài khoản.</p>
+  </div>
+  <div class="card scroll" style="margin-top:16px"><table><thead><tr><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Đăng nhập gần nhất</th><th></th></tr></thead><tbody id="acb"></tbody></table></div>
 </section>
 
 <section id="vAudit" hidden>
@@ -253,7 +283,8 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const URLQ = new URLSearchParams(location.search);
 const URLH = new URLSearchParams(location.hash.replace(/^#/, ""));
 let linkError = URLH.get("error_code") || URLH.get("error") || null;
-const inviteLink = URLQ.get("invite") === "1" || URLH.get("type") === "invite" || !!URLQ.get("token_hash") || !!linkError;
+const resetLink = URLQ.get("reset") === "1" || URLQ.get("type") === "recovery" || URLH.get("type") === "recovery";
+const inviteLink = resetLink || URLQ.get("invite") === "1" || URLH.get("type") === "invite" || !!URLQ.get("token_hash") || !!linkError;
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = s => document.querySelector(s);
@@ -262,9 +293,9 @@ const FD = [["name","1. Tên thuốc","t"],["active_ingredient","2. Hoạt chấ
 const SECT = FD.slice(1).map(p => [p[0], p[1].replace(/^\d+\.\s*/, "")]);
 const ST = {draft:"Nháp", pending:"Chờ duyệt", published:"Đã xuất bản"};
 const BUCKET = "drug-files", MAXB = 10 * 1048576;
-const VIEWS = ["Home","Search","Login","Admin","Audit","SetPw","Accounts"];
-const ROUTES = {"":"Home","/":"Home","/tra-cuu":"Search","/dang-nhap":"Login","/quan-ly":"Admin","/nhat-ky":"Audit","/set-password":"SetPw","/tai-khoan":"Accounts"};
-let role = null, pub = [], openId = null, editing = null, flash = null, sess = null, needsActivation = false;
+const VIEWS = ["Home","Search","Login","Admin","Audit","SetPw","Accounts","ChangePw","ResetPw"];
+const ROUTES = {"":"Home","/":"Home","/tra-cuu":"Search","/dang-nhap":"Login","/quan-ly":"Admin","/nhat-ky":"Audit","/set-password":"SetPw","/tai-khoan":"Accounts","/doi-mat-khau":"ChangePw","/reset-password":"ResetPw"};
+let role = null, pub = [], openId = null, editing = null, flash = null, sess = null, needsActivation = false, recovering = false;
 
 $("#fields").innerHTML = FD.map(p => `<label for="f_${p[0]}">${p[1]}</label>` + (p[2] === "t" ? `<input type="text" id="f_${p[0]}">` : `<textarea id="f_${p[0]}" rows="3"></textarea>`)).join("");
 
@@ -275,11 +306,12 @@ function show(v){VIEWS.forEach(x => $("#v"+x).hidden = x !== v); say("")}
 const go = p => { location.hash = "#" + p; };
 function route(){
   let v = ROUTES[location.hash.replace(/^#/, "")] || "Home";
-  if (needsActivation) v = "SetPw";            // an invited user must finish activation first
-  else if (v === "SetPw") v = "Home";           // no pending invitation -> no access to this page
-  else if ((v === "Admin" && !role) || ((v === "Audit" || v === "Accounts") && role !== "approver")) v = "Login";
+  if (recovering) v = "ResetPw";               // a password-reset link was used: set the new password first
+  else if (needsActivation) v = "SetPw";            // an invited user must finish activation first
+  else if (v === "SetPw" || v === "ResetPw") v = "Home";           // no pending invitation -> no access to this page
+  else if ((v === "Admin" && !role) || ((v === "Audit" || v === "Accounts") && role !== "approver") || (v === "ChangePw" && !role)) v = "Login";
   show(v);
-  const H = {Home:"#/", Search:"#/tra-cuu", Login:"#/dang-nhap", Admin:"#/quan-ly", Audit:"#/nhat-ky", SetPw:"#/set-password", Accounts:"#/tai-khoan"};
+  const H = {Home:"#/", Search:"#/tra-cuu", Login:"#/dang-nhap", Admin:"#/quan-ly", Audit:"#/nhat-ky", SetPw:"#/set-password", Accounts:"#/tai-khoan", ChangePw:"#/doi-mat-khau", ResetPw:"#/reset-password"};
   document.querySelectorAll("nav a").forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === H[v] ? "page" : "false"));
   if (v === "Search") loadPublic();
   if (v === "Admin") loadAdmin();
@@ -347,7 +379,7 @@ async function refreshAuth(){
     if (data) { if (data.activated_at) role = data.role; else needsActivation = true; }
   }
   $("#nLogin").hidden = !!session; $("#nOut").hidden = !session;
-  $("#nAdmin").hidden = !role; $("#nAudit").hidden = role !== "approver"; $("#nAcct").hidden = role !== "approver";
+  $("#nAdmin").hidden = !role; $("#nAudit").hidden = role !== "approver"; $("#nAcct").hidden = role !== "approver"; $("#nPw").hidden = !role;
 }
 $("#lf").onsubmit = async e => {
   e.preventDefault();
@@ -417,7 +449,7 @@ async function del(){
 async function loadAudit(){
   const {data, error} = await sb.from("audit_log").select("*").order("at", {ascending:false}).limit(100);
   if (error) return say("Không tải được nhật ký: " + error.message, true);
-  const A = {INSERT:"Thêm", UPDATE:"Sửa", DELETE:"Xóa", INVITE:"Mời tài khoản", ROLE_CHANGE:"Đổi vai trò"};
+  const A = {INSERT:"Thêm", UPDATE:"Sửa", DELETE:"Xóa", INVITE:"Mời tài khoản", ROLE_CHANGE:"Đổi vai trò", RESET_LINK:"Tạo liên kết đặt lại mật khẩu"};
   $("#ab").innerHTML = data.map(r => { const x = r.new_row || r.old_row || {};
     return `<tr><td>${d(r.at)}</td><td>${esc(r.actor_email)}</td><td>${A[r.action] || esc(r.action)}${r.new_row && ST[r.new_row.status] ? " → " + ST[r.new_row.status] : ""}${r.new_row && r.new_row.role && !r.new_row.name ? " (" + esc(r.new_row.role) + ")" : ""}</td><td>${esc(x.name || x.email)}</td></tr>`; }).join("");
 }
@@ -456,6 +488,41 @@ $("#pf").onsubmit = async e => {
   if (location.hash === "#/dang-nhap") route(); else go("/dang-nhap");   // hashchange runs route() and shows the message
 };
 
+/* ---------- Forgot password: set a new one via an approver-made link ---------- */
+$("#rf").onsubmit = async e => {
+  e.preventDefault();
+  const a = $("#rp1").value, b = $("#rp2").value;
+  if (a.length < 8) return say("Mật khẩu phải có ít nhất 8 ký tự.", true);
+  if (a !== b) return say("Mật khẩu xác nhận không khớp.", true);
+  const {error} = await sb.auth.updateUser({password: a});
+  if (error) return say(pwError(error), true);
+  $("#rp1").value = ""; $("#rp2").value = "";
+  recovering = false;
+  await sb.auth.signOut(); await refreshAuth();          // signs out every device, then log in with the new password
+  flash = {t:"Đã đặt lại mật khẩu. Bạn có thể đăng nhập bằng mật khẩu mới.", e:false};
+  if (location.hash === "#/dang-nhap") route(); else go("/dang-nhap");
+};
+
+/* ---------- Change password (any signed-in, activated user) ---------- */
+$("#cf").onsubmit = async e => {
+  e.preventDefault();
+  const cur = $("#cp").value, a = $("#cp1").value, b = $("#cp2").value;
+  if (a.length < 8) return say("Mật khẩu mới phải có ít nhất 8 ký tự.", true);
+  if (a !== b) return say("Mật khẩu xác nhận không khớp.", true);
+  if (a === cur) return say("Mật khẩu mới phải khác mật khẩu hiện tại.", true);
+  const email = sess && sess.user && sess.user.email;
+  if (!email) return say("Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.", true);
+  const btn = e.submitter; btn.disabled = true;
+  const {error: ve} = await sb.auth.signInWithPassword({email, password: cur});   // proves the person knows the current password
+  if (ve) { btn.disabled = false; return say("Mật khẩu hiện tại không đúng.", true); }
+  const {error} = await sb.auth.updateUser({password: a});
+  btn.disabled = false;
+  if (error) return say(pwError(error), true);
+  ["#cp", "#cp1", "#cp2"].forEach(k => $(k).value = "");
+  try { await sb.auth.signOut({scope: "others"}); } catch (_) {}   // log out every other device
+  say("Đã đổi mật khẩu thành công.");
+};
+
 /* ---------- Account management (approvers) ---------- */
 const RL = {editor:"Editor", approver:"Approver"};
 async function loadAccounts(){
@@ -465,8 +532,9 @@ async function loadAccounts(){
     const me = sess && u.id === sess.user.id;
     const roleCell = me ? `${RL[u.role]} (bạn)` : `<select data-uid="${u.id}" aria-label="Vai trò của ${esc(u.email)}"><option value="editor"${u.role === "editor" ? " selected" : ""}>Editor</option><option value="approver"${u.role === "approver" ? " selected" : ""}>Approver</option></select>`;
     const st = u.status === "active" ? '<span class="tag">Đang hoạt động</span>' : '<span class="tag pending">Đã mời – chờ kích hoạt</span>';
-    return `<tr><td>${esc(u.email)}</td><td>${roleCell}</td><td>${st}</td><td>${d(u.last_sign_in_at)}</td></tr>`;
-  }).join("") || '<tr><td colspan="4">Chưa có tài khoản nào.</td></tr>';
+    const act = u.status === "active" && !me ? `<button class="btn" data-reset="${u.id}" data-email="${esc(u.email)}">Đặt lại mật khẩu</button>` : "";
+    return `<tr><td>${esc(u.email)}</td><td>${roleCell}</td><td>${st}</td><td>${d(u.last_sign_in_at)}</td><td>${act}</td></tr>`;
+  }).join("") || '<tr><td colspan="5">Chưa có tài khoản nào.</td></tr>';
 }
 $("#acb").onchange = async e => {
   const sel = e.target.closest("select[data-uid]"); if (!sel) return;
@@ -492,6 +560,24 @@ $("#inv").onsubmit = async e => {
   $("#ie").value = ""; loadAccounts();
 };
 
+$("#acb").onclick = async e => {
+  const b = e.target.closest("button[data-reset]"); if (!b) return;
+  if (!confirm("Tạo liên kết đặt lại mật khẩu cho " + b.dataset.email + "?")) return;
+  b.disabled = true;
+  const {data, error} = await sb.functions.invoke("invite-user", {body: {action: "reset", user_id: b.dataset.reset}});
+  b.disabled = false;
+  if (error) {
+    let m = "Không tạo được liên kết. Vui lòng thử lại.";
+    try { const j = await error.context.json(); if (j && j.error) m = j.error; } catch (_) {}
+    return say(m, true);
+  }
+  $("#rlink").value = data.link; $("#rmsg").textContent = "Liên kết đặt lại mật khẩu cho " + b.dataset.email + ":";
+  $("#rbox").hidden = false; say("");
+};
+$("#rcopy").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#rlink").value); say("Đã sao chép liên kết."); }
+  catch (_) { $("#rlink").select(); say("Hãy nhấn Ctrl+C để sao chép liên kết."); }
+};
 $("#icopy").onclick = async () => {
   try { await navigator.clipboard.writeText($("#ilink").value); say("Đã sao chép liên kết."); }
   catch (_) { $("#ilink").select(); say("Hãy nhấn Ctrl+C để sao chép liên kết."); }
@@ -500,16 +586,17 @@ $("#icopy").onclick = async () => {
 /* ---------- Start ---------- */
 async function start(){
   if (inviteLink && URLQ.get("token_hash") && !linkError) {   // optional token_hash style link
-    const {error} = await sb.auth.verifyOtp({token_hash: URLQ.get("token_hash"), type: "invite"});
+    const {error} = await sb.auth.verifyOtp({token_hash: URLQ.get("token_hash"), type: resetLink ? "recovery" : "invite"});
     if (error) linkError = "otp_expired";
   }
   if (inviteLink) await sb.auth.getSession();                 // lets the client finish reading tokens from the URL
   await refreshAuth();
   if (inviteLink) {
     let p = "/dang-nhap";
-    if (!linkError && sess && needsActivation) p = "/set-password";
+    if (!linkError && sess && resetLink) { recovering = true; p = "/reset-password"; }
+    else if (!linkError && sess && needsActivation) p = "/set-password";
     else if (!linkError && sess) p = "/";                      // already activated
-    else flash = {t:"Liên kết mời không hợp lệ hoặc đã hết hạn. Hãy nhờ người quản lý gửi lại lời mời.", e:true};
+    else flash = {t: resetLink ? "Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Hãy nhờ người quản lý tạo liên kết mới." : "Liên kết mời không hợp lệ hoặc đã hết hạn. Hãy nhờ người quản lý gửi lại lời mời.", e:true};
     history.replaceState(null, "", location.pathname + "#" + p);   // also removes ?invite=1 and any tokens from the address bar
   }
   route();
