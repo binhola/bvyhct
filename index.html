@@ -92,6 +92,9 @@ td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-a
 footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px;color:var(--mute);font-size:15px}
 [hidden]{display:none!important}
 
+select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink)}
+td select{width:auto;padding:6px 10px}
+.hint.err{color:var(--bad);font-weight:600}
 /* ---- Responsive: phones, tablets, notched screens ---- */
 html{-webkit-text-size-adjust:100%}
 .wrap,.top .in{padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
@@ -135,6 +138,7 @@ nav{order:2;margin-left:auto}
     <a class="btn" id="nSearch" href="#/tra-cuu">Tra cứu thuốc</a>
     <a class="btn" id="nAdmin" href="#/quan-ly" hidden>Quản lý dữ liệu</a>
     <a class="btn" id="nAudit" href="#/nhat-ky" hidden>Nhật ký thay đổi</a>
+      <a class="btn" id="nAcct" href="#/tai-khoan" hidden>Quản lý tài khoản</a>
     <a class="btn" id="nLogin" href="#/dang-nhap">Đăng nhập</a>
     <button class="btn" id="nOut" hidden>Đăng xuất</button>
   </nav>
@@ -201,6 +205,37 @@ nav{order:2;margin-left:auto}
   </form>
 </section>
 
+<section id="vSetPw" hidden>
+  <h2>Kích hoạt tài khoản</h2>
+  <form id="pf" class="card" style="max-width:420px;margin-top:16px">
+    <p class="hint" style="margin-top:0">Tạo mật khẩu để hoàn tất kích hoạt tài khoản của bạn.</p>
+    <label for="np">Mật khẩu mới</label><input id="np" type="password" minlength="8" required autocomplete="new-password">
+    <label for="np2">Xác nhận mật khẩu</label><input id="np2" type="password" minlength="8" required autocomplete="new-password">
+    <p class="hint">Tối thiểu 8 ký tự.</p>
+    <div class="bar"><button class="btn pri" type="submit">Kích hoạt tài khoản</button></div>
+  </form>
+</section>
+
+<section id="vAccounts" hidden>
+  <h2>Quản lý tài khoản</h2>
+  <form id="inv" class="card" style="max-width:520px;margin-top:16px">
+    <label for="ie" style="margin-top:0">Email người được mời</label><input id="ie" type="email" required autocomplete="off">
+    <label for="ir">Vai trò</label>
+    <select id="ir"><option value="editor">Editor (biên soạn)</option><option value="approver">Approver (duyệt)</option></select>
+    <label for="imode">Cách gửi lời mời</label>
+    <select id="imode"><option value="link">Tạo liên kết để gửi qua Zalo / tin nhắn</option><option value="email">Gửi email tự động</option></select>
+    <div id="il" hidden style="margin-top:12px">
+      <label for="ilink">Liên kết kích hoạt (dùng một lần)</label>
+      <input id="ilink" type="text" readonly>
+      <div class="bar"><button class="btn" type="button" id="icopy">Sao chép liên kết</button></div>
+      <p class="hint">Gửi riêng cho đúng người được mời. Ai có liên kết này đều có thể tạo mật khẩu cho tài khoản.</p>
+    </div>
+    <div class="bar"><button class="btn sun" type="submit">Gửi lời mời</button></div>
+    <p class="hint" id="im" role="status"></p>
+  </form>
+  <div class="card scroll" style="margin-top:16px"><table><thead><tr><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Đăng nhập gần nhất</th></tr></thead><tbody id="acb"></tbody></table></div>
+</section>
+
 <section id="vAudit" hidden>
   <h2>Nhật ký thay đổi</h2>
   <div class="card scroll" style="margin-top:16px"><table><thead><tr><th>Thời gian</th><th>Người thực hiện</th><th>Thao tác</th><th>Thuốc</th></tr></thead><tbody id="ab"></tbody></table></div>
@@ -214,6 +249,12 @@ nav{order:2;margin-left:auto}
 const SUPABASE_URL = "https://fsmjghlzgjyoriumvlwp.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbWpnaGx6Z2p5b3JpdW12bHdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1MTY5MTEsImV4cCI6MjEwOTA5MjkxMX0.MVOtO5S1JcfufEdwVyuY9jpyM2dcmfu7jQ3iTOBHHzE";
 
+// Invitation links: read the URL BEFORE the Supabase client touches / clears it.
+const URLQ = new URLSearchParams(location.search);
+const URLH = new URLSearchParams(location.hash.replace(/^#/, ""));
+let linkError = URLH.get("error_code") || URLH.get("error") || null;
+const inviteLink = URLQ.get("invite") === "1" || URLH.get("type") === "invite" || !!URLQ.get("token_hash") || !!linkError;
+
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -221,9 +262,9 @@ const FD = [["name","1. Tên thuốc","t"],["active_ingredient","2. Hoạt chấ
 const SECT = FD.slice(1).map(p => [p[0], p[1].replace(/^\d+\.\s*/, "")]);
 const ST = {draft:"Nháp", pending:"Chờ duyệt", published:"Đã xuất bản"};
 const BUCKET = "drug-files", MAXB = 10 * 1048576;
-const VIEWS = ["Home","Search","Login","Admin","Audit"];
-const ROUTES = {"":"Home","/":"Home","/tra-cuu":"Search","/dang-nhap":"Login","/quan-ly":"Admin","/nhat-ky":"Audit"};
-let role = null, pub = [], openId = null, editing = null, flash = null;
+const VIEWS = ["Home","Search","Login","Admin","Audit","SetPw","Accounts"];
+const ROUTES = {"":"Home","/":"Home","/tra-cuu":"Search","/dang-nhap":"Login","/quan-ly":"Admin","/nhat-ky":"Audit","/set-password":"SetPw","/tai-khoan":"Accounts"};
+let role = null, pub = [], openId = null, editing = null, flash = null, sess = null, needsActivation = false;
 
 $("#fields").innerHTML = FD.map(p => `<label for="f_${p[0]}">${p[1]}</label>` + (p[2] === "t" ? `<input type="text" id="f_${p[0]}">` : `<textarea id="f_${p[0]}" rows="3"></textarea>`)).join("");
 
@@ -234,13 +275,16 @@ function show(v){VIEWS.forEach(x => $("#v"+x).hidden = x !== v); say("")}
 const go = p => { location.hash = "#" + p; };
 function route(){
   let v = ROUTES[location.hash.replace(/^#/, "")] || "Home";
-  if ((v === "Admin" && !role) || (v === "Audit" && role !== "approver")) v = "Login";
+  if (needsActivation) v = "SetPw";            // an invited user must finish activation first
+  else if (v === "SetPw") v = "Home";           // no pending invitation -> no access to this page
+  else if ((v === "Admin" && !role) || ((v === "Audit" || v === "Accounts") && role !== "approver")) v = "Login";
   show(v);
-  const H = {Home:"#/", Search:"#/tra-cuu", Login:"#/dang-nhap", Admin:"#/quan-ly", Audit:"#/nhat-ky"};
+  const H = {Home:"#/", Search:"#/tra-cuu", Login:"#/dang-nhap", Admin:"#/quan-ly", Audit:"#/nhat-ky", SetPw:"#/set-password", Accounts:"#/tai-khoan"};
   document.querySelectorAll("nav a").forEach(a => a.setAttribute("aria-current", a.getAttribute("href") === H[v] ? "page" : "false"));
   if (v === "Search") loadPublic();
   if (v === "Admin") loadAdmin();
   if (v === "Audit") loadAudit();
+  if (v === "Accounts") loadAccounts();
   window.scrollTo(0, 0);
   if (flash) { say(flash.t, flash.e); flash = null; }
 }
@@ -297,13 +341,13 @@ $("#az").onclick = e => { const b = e.target.closest("button[data-l]"); if (!b) 
 /* ---------- Auth ---------- */
 async function refreshAuth(){
   const {data:{session}} = await sb.auth.getSession();
-  role = null;
+  sess = session; role = null; needsActivation = false;
   if (session){
-    const {data} = await sb.from("profiles").select("role").eq("id", session.user.id).maybeSingle();
-    role = data ? data.role : null;
+    const {data} = await sb.from("profiles").select("role, activated_at").eq("id", session.user.id).maybeSingle();
+    if (data) { if (data.activated_at) role = data.role; else needsActivation = true; }
   }
   $("#nLogin").hidden = !!session; $("#nOut").hidden = !session;
-  $("#nAdmin").hidden = !role; $("#nAudit").hidden = role !== "approver";
+  $("#nAdmin").hidden = !role; $("#nAudit").hidden = role !== "approver"; $("#nAcct").hidden = role !== "approver";
 }
 $("#lf").onsubmit = async e => {
   e.preventDefault();
@@ -373,9 +417,9 @@ async function del(){
 async function loadAudit(){
   const {data, error} = await sb.from("audit_log").select("*").order("at", {ascending:false}).limit(100);
   if (error) return say("Không tải được nhật ký: " + error.message, true);
-  const A = {INSERT:"Thêm", UPDATE:"Sửa", DELETE:"Xóa"};
+  const A = {INSERT:"Thêm", UPDATE:"Sửa", DELETE:"Xóa", INVITE:"Mời tài khoản", ROLE_CHANGE:"Đổi vai trò"};
   $("#ab").innerHTML = data.map(r => { const x = r.new_row || r.old_row || {};
-    return `<tr><td>${d(r.at)}</td><td>${esc(r.actor_email)}</td><td>${A[r.action]}${r.new_row ? " → " + ST[r.new_row.status] : ""}</td><td>${esc(x.name)}</td></tr>`; }).join("");
+    return `<tr><td>${d(r.at)}</td><td>${esc(r.actor_email)}</td><td>${A[r.action] || esc(r.action)}${r.new_row && ST[r.new_row.status] ? " → " + ST[r.new_row.status] : ""}${r.new_row && r.new_row.role && !r.new_row.name ? " (" + esc(r.new_row.role) + ")" : ""}</td><td>${esc(x.name || x.email)}</td></tr>`; }).join("");
 }
 
 const sysDark = () => matchMedia("(prefers-color-scheme:dark)").matches;
@@ -388,7 +432,89 @@ $("#nTheme").onclick = () => {
   $("#nTheme").setAttribute("aria-pressed", nx === "dark");
 };
 
-refreshAuth().then(route);
+/* ---------- Account activation (invited users) ---------- */
+function pwError(e){
+  const m = String(e && e.message || "").toLowerCase();
+  if (m.includes("same")) return "Mật khẩu mới phải khác mật khẩu hiện tại.";
+  if (m.includes("weak") || m.includes("least") || m.includes("short")) return "Mật khẩu quá yếu. Hãy dùng ít nhất 8 ký tự, gồm cả chữ và số.";
+  if (m.includes("session") || m.includes("jwt") || m.includes("expired") || m.includes("not authenticated")) return "Phiên kích hoạt đã hết hạn. Hãy mở lại liên kết trong email mời.";
+  return "Không đặt được mật khẩu. Vui lòng thử lại.";
+}
+$("#pf").onsubmit = async e => {
+  e.preventDefault();
+  const a = $("#np").value, b = $("#np2").value;
+  if (a.length < 8) return say("Mật khẩu phải có ít nhất 8 ký tự.", true);
+  if (a !== b) return say("Mật khẩu xác nhận không khớp.", true);
+  const {error} = await sb.auth.updateUser({password: a});
+  if (error) return say(pwError(error), true);
+  $("#np").value = ""; $("#np2").value = "";
+  const {data: done, error: actErr} = await sb.rpc("complete_activation");
+  if (actErr || !done) return say("Không hoàn tất được kích hoạt. Vui lòng thử lại hoặc liên hệ người quản lý.", true);
+  try { await sb.functions.invoke("send-activation-email"); } catch (_) {}   // best effort; the account is already active
+  await sb.auth.signOut(); await refreshAuth();
+  flash = {t:"Tài khoản đã được kích hoạt thành công. Bạn có thể đăng nhập.", e:false};
+  if (location.hash === "#/dang-nhap") route(); else go("/dang-nhap");   // hashchange runs route() and shows the message
+};
+
+/* ---------- Account management (approvers) ---------- */
+const RL = {editor:"Editor", approver:"Approver"};
+async function loadAccounts(){
+  const {data, error} = await sb.rpc("list_accounts");
+  if (error) return say("Không tải được danh sách tài khoản: " + error.message, true);
+  $("#acb").innerHTML = data.map(u => {
+    const me = sess && u.id === sess.user.id;
+    const roleCell = me ? `${RL[u.role]} (bạn)` : `<select data-uid="${u.id}" aria-label="Vai trò của ${esc(u.email)}"><option value="editor"${u.role === "editor" ? " selected" : ""}>Editor</option><option value="approver"${u.role === "approver" ? " selected" : ""}>Approver</option></select>`;
+    const st = u.status === "active" ? '<span class="tag">Đang hoạt động</span>' : '<span class="tag pending">Đã mời – chờ kích hoạt</span>';
+    return `<tr><td>${esc(u.email)}</td><td>${roleCell}</td><td>${st}</td><td>${d(u.last_sign_in_at)}</td></tr>`;
+  }).join("") || '<tr><td colspan="4">Chưa có tài khoản nào.</td></tr>';
+}
+$("#acb").onchange = async e => {
+  const sel = e.target.closest("select[data-uid]"); if (!sel) return;
+  const {error} = await sb.rpc("set_user_role", {target: sel.dataset.uid, new_role: sel.value});
+  if (error) say(String(error.message).includes("own role") ? "Bạn không thể đổi vai trò của chính mình." : "Không đổi được vai trò: " + error.message, true);
+  else say("Đã đổi vai trò.");
+  loadAccounts();
+};
+$("#inv").onsubmit = async e => {
+  e.preventDefault();
+  const btn = e.submitter, im = $("#im"), email = $("#ie").value.trim();
+  btn.disabled = true; im.className = "hint"; im.textContent = "Đang gửi lời mời...";
+  $("#il").hidden = true;
+  const {data, error} = await sb.functions.invoke("invite-user", {body: {email, role: $("#ir").value, send_email: $("#imode").value === "email"}});
+  btn.disabled = false;
+  if (error) {
+    let m = "Không gửi được lời mời. Vui lòng thử lại.";
+    try { const j = await error.context.json(); if (j && j.error) m = j.error; } catch (_) {}
+    im.className = "hint err"; im.textContent = m; return;
+  }
+  if (data && data.link) { $("#ilink").value = data.link; $("#il").hidden = false; im.textContent = "Đã tạo tài khoản cho " + email + ". Hãy sao chép liên kết bên dưới và gửi riêng cho người đó."; }
+  else im.textContent = "Đã gửi lời mời tới " + email + ".";
+  $("#ie").value = ""; loadAccounts();
+};
+
+$("#icopy").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#ilink").value); say("Đã sao chép liên kết."); }
+  catch (_) { $("#ilink").select(); say("Hãy nhấn Ctrl+C để sao chép liên kết."); }
+};
+
+/* ---------- Start ---------- */
+async function start(){
+  if (inviteLink && URLQ.get("token_hash") && !linkError) {   // optional token_hash style link
+    const {error} = await sb.auth.verifyOtp({token_hash: URLQ.get("token_hash"), type: "invite"});
+    if (error) linkError = "otp_expired";
+  }
+  if (inviteLink) await sb.auth.getSession();                 // lets the client finish reading tokens from the URL
+  await refreshAuth();
+  if (inviteLink) {
+    let p = "/dang-nhap";
+    if (!linkError && sess && needsActivation) p = "/set-password";
+    else if (!linkError && sess) p = "/";                      // already activated
+    else flash = {t:"Liên kết mời không hợp lệ hoặc đã hết hạn. Hãy nhờ người quản lý gửi lại lời mời.", e:true};
+    history.replaceState(null, "", location.pathname + "#" + p);   // also removes ?invite=1 and any tokens from the address bar
+  }
+  route();
+}
+start();
 </script>
 </body>
 </html>
